@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from argparse import ArgumentParser
 import urllib.request
 import sys
@@ -5,7 +6,7 @@ import sys
 query = {
     'market': "1", # Говорит о том, где вращается бумага(инструмент)
     'em': "175924", # Индекс бумаги(инструмента)
-    'code': "POLY", # символьная переменная по инструменту
+    'code': "PHOR", # символьная переменная по инструменту
     'apply': "0", #
     'df': "20", # начальный день
     'mf': "4", # начальный месяц
@@ -36,14 +37,31 @@ query = {
 def parse(file_path):
     pass
 
+# code start_date month_count
 def parse_args(argv):
-    pass
+    parser = ArgumentParser()
+    parser.add_argument("code", help="Code of the instrument")
+    parser.add_argument("start_date", help="Starting date in dd.mm.yyyy format")
+    parser.add_argument("month_count", help="Determine how many month since start date should be analyzed")
+    args = parser.parse_args()
+    query["code"] = args.code
+    query["from"] = args.start_date
+    query["df"] = args.start_date.split(".")[0]
+    query["mf"] = args.start_date.split(".")[1]
+    query["yf"] = args.start_date.split(".")[2]
+    query["to"] = "21.12.2018"
+    query["dt"] = "21"
+    query["mt"] = "12"
+    query["yt"] = "2018"
+
+def make_query():
+    req = urllib.request.Request(url=f"http://export.finam.ru/POLY_170620_170623.txt?market={query['market']}&em={query['em']}&code={query['code']}&apply={query['apply']}&df={query['df']}&mf={query['mf']}&yf={query['yf']}&from={query['from']}&dt={query['dt']}&mt={query['mt']}&yt={query['yt']}&to={query['to']}&p={query['p']}&f={query['f']}&e={query['e']}&cn={query['cn']}&dtf={query['dtf']}&tmf={query['tmf']}&MSOR={query['MSOR']}&mstime={query['mstime']}&mstimever={query['mstimever']}&sep={query['sep']}&sep2={query['sep2']}&datf={query['datf']}&at={query['at']}")
+    with urllib.request.urlopen(req) as read_file, open("test.txt", mode="w", encoding="utf-8") as write_file:
+        write_file.write(read_file.read().decode('utf-8'))
 
 def main(argv):
     parse_args(argv)
-    req = urllib.request.Request(url=f"http://export.finam.ru/POLY_170620_170623.txt?market={query['market']}&em={query['em']}&code={query['code']}&apply={query['apply']}&df={query['df']}&mf={query['mf']}&yf={query['yf']}&from={query['from']}&dt={query['dt']}&mt={query['mt']}&yt={query['yt']}&to={query['to']}&p={query['p']}&f={query['f']}&e={query['e']}&cn={query['cn']}&dtf={query['dtf']}&tmf={query['tmf']}&MSOR={query['MSOR']}&mstime={query['mstime']}&mstimever={query['mstimever']}&sep={query['sep']}&sep2={query['sep2']}&datf={query['datf']}&at={query['at']}")
-    with urllib.request.urlopen(req) as readFile, open("test.txt", mode="w", encoding="utf-8") as writeFile:
-        writeFile.write(readFile.read().decode('utf-8'))
+    make_query()
 
 if __name__ == "__main__":
     main(sys.argv[1:])
