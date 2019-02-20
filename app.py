@@ -2,6 +2,7 @@
 from argparse import ArgumentParser
 import urllib.request
 import sys
+from codes import codes
 
 query = {
     'market': "1", # Говорит о том, где вращается бумага(инструмент)
@@ -60,6 +61,7 @@ def make_query():
         write_file.write(read_file.read().decode('utf-8'))
 
 def main(argv):
+    print(codes)
     parse_args(argv)
     make_query()
 
