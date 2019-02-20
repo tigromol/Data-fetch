@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 import urllib.request
 import sys
-from codes import codes
+from exchanges.ex3 import codes
 
 query = {
     'market': "1", # Говорит о том, где вращается бумага(инструмент)
@@ -45,15 +45,16 @@ def parse_args(argv):
     parser.add_argument("start_date", help="Starting date in dd.mm.yyyy format")
     parser.add_argument("month_count", help="Determine how many month since start date should be analyzed")
     args = parser.parse_args()
-    query["code"] = args.code
-    query["from"] = args.start_date
-    query["df"] = args.start_date.split(".")[0]
-    query["mf"] = args.start_date.split(".")[1]
-    query["yf"] = args.start_date.split(".")[2]
-    query["to"] = "21.12.2018"
-    query["dt"] = "21"
-    query["mt"] = "12"
-    query["yt"] = "2018"
+    # query["code"] = args.code
+    # query["em"] = codes[args.code]
+    # query["from"] = args.start_date
+    # query["df"] = args.start_date.split(".")[0]
+    # query["mf"] = args.start_date.split(".")[1]
+    # query["yf"] = args.start_date.split(".")[2]
+    # query["to"] = "21.12.2018"
+    # query["dt"] = "21"
+    # query["mt"] = "12"
+    # query["yt"] = "2018"
 
 def make_query():
     req = urllib.request.Request(url=f"http://export.finam.ru/POLY_170620_170623.txt?market={query['market']}&em={query['em']}&code={query['code']}&apply={query['apply']}&df={query['df']}&mf={query['mf']}&yf={query['yf']}&from={query['from']}&dt={query['dt']}&mt={query['mt']}&yt={query['yt']}&to={query['to']}&p={query['p']}&f={query['f']}&e={query['e']}&cn={query['cn']}&dtf={query['dtf']}&tmf={query['tmf']}&MSOR={query['MSOR']}&mstime={query['mstime']}&mstimever={query['mstimever']}&sep={query['sep']}&sep2={query['sep2']}&datf={query['datf']}&at={query['at']}")
@@ -61,7 +62,6 @@ def make_query():
         write_file.write(read_file.read().decode('utf-8'))
 
 def main(argv):
-    print(codes)
     parse_args(argv)
     make_query()
 
