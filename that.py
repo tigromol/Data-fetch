@@ -1,5 +1,6 @@
 import json
 import math
+import sys
 import time
 import matplotlib.pyplot as plt
 import numpy as np
@@ -20,7 +21,7 @@ def amp(obser, x):
 def expgrap(obser,amps):
     data = []
     print('expgrap')
-    for i in range(int(len(obser)/5)):
+    for i in range(int(len(obser)/2)):
         tmp = amps[i]
         if(len(tmp)!=0):
             data.append(np.mean(tmp))
@@ -30,7 +31,7 @@ def expgrap(obser,amps):
 def dispgrap(obser,amps):
     print('dispgrap started')
     data = []
-    for i in range(int(len(obser)/5)):
+    for i in range(int(len(obser)/2)):
         tmp = amps[i]
         if(len(tmp)!=0):
             data.append(np.val(tmp))
@@ -39,7 +40,7 @@ def dispgrap(obser,amps):
 def assymgrap(obser,amps):
     print('dispgrap started')
     data = []
-    for i in range(int(len(obser)/5)):
+    for i in range(int(len(obser)/2)):
         tmp = amps[i]
         if(len(tmp)!=0):
             data.append(ss.skew(tmp))
@@ -48,13 +49,18 @@ def assymgrap(obser,amps):
 def excesgrap(obser,amps):
     print('dispgrap started')
     data = []
-    for i in range(int(len(obser)/5)):
+    for i in range(int(len(obser)/2)):
         tmp = amps[i]
         if(len(tmp)!=0):
             data.append(ss.kurtosis(tmp))
     return data    
 
+def main(args):
+    amps = [amp(args,i) for i in range(int(len(args)/2))]
+    plt.plot(expgrap(args,amps))
 
-plt.plot([1, 2, 3, 4])
-plt.ylabel('some numbers')
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
+
 plt.show()
