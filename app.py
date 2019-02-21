@@ -6,6 +6,7 @@ import os
 import urllib.request
 import sys
 from gen import gen_next_month
+import that
 import time
 from exchanges.codes import codes
 
@@ -50,8 +51,10 @@ def get_data(dir_path):
         data = []
         file_name = os.path.join(dir_path, file)
         with open(file_name, mode="r", encoding="utf-8") as reader:
+            reader.readline()
+            print('start')
             for line in reader:
-                data.append(line.split(",")[-1])
+                data.append(float(line.split(",")[-1]))
         yield data
 
 
@@ -92,8 +95,8 @@ def parse_date(start_date, final_date):
     query["yt"] = query['to'].split(".")[2]
 
 def main(argv):
-    for arr in get_data(data_path):
-        print(arr)
+    
+    
     # dates = parse_args(argv)
     # date_gen = gen_next_month(dates["start"], dates["final"])
     # prev_date = dates["start"]
@@ -109,6 +112,6 @@ def main(argv):
     #         time.sleep(1)
     # except StopIteration:
     #     print("Success")
-
+    that.main(next(get_data(data_path)))
 if __name__ == "__main__":
     main(sys.argv[1:])
