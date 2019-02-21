@@ -51,9 +51,7 @@ def get_data(dir_path):
         file_name = os.path.join(dir_path, file)
         with open(file_name, mode="r", encoding="utf-8") as reader:
             for line in reader:
-                match = re.search(r"^.+,\d+,\d+,\d+,(\d+.\d+)$", line)
-                if match:
-                    data.append(match.group(1))
+                data.append(line.split(",")[-1])
         yield data
 
 
