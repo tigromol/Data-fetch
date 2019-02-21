@@ -2,6 +2,7 @@
 from argparse import ArgumentParser
 import urllib.request
 import sys
+import gen
 from exchanges.codes import codes
 
 query = {
@@ -40,26 +41,27 @@ def parse(file_path):
 
 # code start_date month_count
 def parse_args(argv):
-    parser = ArgumentParser()
+    parser = ArgumentParser(description='parse files via que request')
     parser.add_argument("code", help="Code of the instrument")
     parser.add_argument("start_date", help="Starting date in dd.mm.yyyy format")
-    parser.add_argument("month_count", help="Determine how many month since start date should be analyzed")
+    parser.add_argument("final_date", help="Final date in dd.mm.yyyy format")
     args = parser.parse_args()
     query["market"] = codes[args.code][0]
     query["code"] = args.code
+    query['cn'] = args.code
     query["em"] = codes[args.code][1]
-    # query["from"] = args.start_date
-    # query["df"] = args.start_date.split(".")[0]
-    # query["mf"] = args.start_date.split(".")[1]
-    # query["yf"] = args.start_date.split(".")[2]
-    # query["to"] = "21.12.2018"
-    # query["dt"] = "21"
-    # query["mt"] = "12"
-    # query["yt"] = "2018"
+    query["from"] = args.start_date
+    query["df"] = args.start_date.split(".")[0]
+    query["mf"] = args.start_date.split(".")[1]
+    query["yf"] = args.start_date.split(".")[2]
+    query["to"] = args.final_date
+    query["dt"] = args.final_date.split(".")[0]
+    query["mt"] = args.final_date.split(".")[1]
+    query["yt"] = args.final_date.split(".")[2]
 
 def make_query():
     req = urllib.request.Request(url=f"http://export.finam.ru/POLY_170620_170623.txt?market={query['market']}&em={query['em']}&code={query['code']}&apply={query['apply']}&df={query['df']}&mf={query['mf']}&yf={query['yf']}&from={query['from']}&dt={query['dt']}&mt={query['mt']}&yt={query['yt']}&to={query['to']}&p={query['p']}&f={query['f']}&e={query['e']}&cn={query['cn']}&dtf={query['dtf']}&tmf={query['tmf']}&MSOR={query['MSOR']}&mstime={query['mstime']}&mstimever={query['mstimever']}&sep={query['sep']}&sep2={query['sep2']}&datf={query['datf']}&at={query['at']}")
-    with urllib.request.urlopen(req) as read_file, open("test.txt", mode="w", encoding="utf-8") as write_file:
+    with urllib.request.urlopen(req) as read_file, open(f"{query['code']}_{query['from']}_{query['to']}.txt", mode="w", encoding="utf-8") as write_file:
         write_file.write(read_file.read().decode('utf-8'))
 
 def main(argv):

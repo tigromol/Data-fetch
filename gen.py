@@ -13,9 +13,10 @@ def gen(startDate, endDate, step=timedelta(days=1), inclusive=True):
             sdate = sdate + step
     if inclusive and sdate == edate:
         yield sdate
-fy = gen('11.04.1998', '21.02.2019', step=timedelta(days=1), inclusive=True)
+     
+fy = gen('19.02.2019', '21.02.2019', step=timedelta(days=1), inclusive=True)
 print(next(fy))
 print(next(fy))
 print(next(fy))
-print(next(fy))
-print(next(fy))
+
+print('test')
