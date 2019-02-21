@@ -53,7 +53,7 @@ def parse_args(argv):
     query["code"] = args.code
     query['cn'] = args.code
     query["em"] = codes[args.code][1]
-    return {"start": args.start_date, "final": args.final_date}
+    return {"start": args.start_date, "final": args.final_date,}
 
 def make_query():
     req = urllib.request.Request(url=f"http://export.finam.ru/POLY_170620_170623.txt?market={query['market']}&em={query['em']}&code={query['code']}&apply={query['apply']}&df={query['df']}&mf={query['mf']}&yf={query['yf']}&from={query['from']}&dt={query['dt']}&mt={query['mt']}&yt={query['yt']}&to={query['to']}&p={query['p']}&f={query['f']}&e={query['e']}&cn={query['cn']}&dtf={query['dtf']}&tmf={query['tmf']}&MSOR={query['MSOR']}&mstime={query['mstime']}&mstimever={query['mstimever']}&sep={query['sep']}&sep2={query['sep2']}&datf={query['datf']}&at={query['at']}")
@@ -81,11 +81,13 @@ def main(argv):
     try:
         while True:
             next_date = next(date_gen).strftime("%d.%m.%Y")
+            print(prev_date)
+            print(next_date)
             parse_date(prev_date, next_date)
             prev_date = next_date
 
             make_query()
-            time.sleep(5)
+            time.sleep(1)
     except StopIteration:
         print("Success")
     
