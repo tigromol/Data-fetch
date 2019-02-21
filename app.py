@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
+from datetime import datetime
 import os
 import urllib.request
 import sys
-import gen
+from gen import gen_next_month
 import time
 from exchanges.codes import codes
 
@@ -49,6 +50,9 @@ def parse_args(argv):
     parser.add_argument("final_date", help="Final date in dd.mm.yyyy format")
     args = parser.parse_args()
     
+    if datetime.strptime(args.start_date, "%d.%m.%Y") > datetime.strptime(args.final_date, "%d.%m.%Y"):
+        raise Exception("Start date should be less than final")
+
     query["market"] = codes[args.code][0]
     query["code"] = args.code
     query['cn'] = args.code
@@ -76,11 +80,13 @@ def parse_date(start_date, final_date):
 
 def main(argv):
     dates = parse_args(argv)
-    date_gen = gen.gen(dates["start"], dates["final"])
+    date_gen = gen_next_month(dates["start"], dates["final"])
     prev_date = dates["start"]
     try:
         while True:
             next_date = next(date_gen).strftime("%d.%m.%Y")
+            print(prev_date)
+            print(next_date)
             parse_date(prev_date, next_date)
             prev_date = next_date
 
