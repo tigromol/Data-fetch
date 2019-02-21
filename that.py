@@ -19,12 +19,13 @@ def amp(obser, x):
     return data
 @jit(nopython=True)
 def expgrap(obser,amps):
-    data = []
+    data = [float(0)]
     print('expgrap')
     for i in range(int(len(obser)/2)):
-        tmp = amps[i]
+        tmp = np.array(amp(obser,i))
         if(len(tmp)!=0):
-            data.append(np.mean(tmp))
+            tmp1 = np.mean(tmp)
+            data.append(tmp1)
     print('expgrap finished')
     return data    
 @jit(nopython=True)
@@ -56,10 +57,13 @@ def excesgrap(obser,amps):
     return data    
 
 def main(args):
-    amps = [amp(args,i) for i in range(int(len(args)/2))]
+    start_time = time.time()
+    amps=[1]
+    #amps = [amp(args,i) for i in range(int(len(args)/2))]
     plt.plot(expgrap(args,amps))
-
-
+    print(len(args))
+    print("--- %s seconds ---" % (time.time() - start_time))
+    plt.show()
 if __name__ == "__main__":
     main(sys.argv[1:])
 
