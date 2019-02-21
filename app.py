@@ -81,8 +81,6 @@ def main(argv):
     try:
         while True:
             next_date = next(date_gen).strftime("%d.%m.%Y")
-            print(prev_date)
-            print(next_date)
             parse_date(prev_date, next_date)
             prev_date = next_date
 
