@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
+import os
 import urllib.request
 import sys
 import gen
 import time
 from exchanges.codes import codes
+
+dir = os.path.dirname(__file__)
 
 query = {
     'market': "1", # Говорит о том, где вращается бумага(инструмент)
@@ -54,15 +57,16 @@ def parse_args(argv):
 
 def make_query():
     req = urllib.request.Request(url=f"http://export.finam.ru/POLY_170620_170623.txt?market={query['market']}&em={query['em']}&code={query['code']}&apply={query['apply']}&df={query['df']}&mf={query['mf']}&yf={query['yf']}&from={query['from']}&dt={query['dt']}&mt={query['mt']}&yt={query['yt']}&to={query['to']}&p={query['p']}&f={query['f']}&e={query['e']}&cn={query['cn']}&dtf={query['dtf']}&tmf={query['tmf']}&MSOR={query['MSOR']}&mstime={query['mstime']}&mstimever={query['mstimever']}&sep={query['sep']}&sep2={query['sep2']}&datf={query['datf']}&at={query['at']}")
-    with urllib.request.urlopen(req) as read_file, open(f"{query['code']}_{query['from']}_{query['to']}.txt", mode="w", encoding="utf-8") as write_file:
+    file_name = os.path.join(dir, "data", f"{query['code']}_{query['from']}_{query['to']}.txt")
+    with urllib.request.urlopen(req) as read_file, open(file_name, mode="w", encoding="utf-8") as write_file:
         try:
             write_file.write(read_file.read().decode('utf-8'))
         except UnicodeDecodeError:
             print(f"Unable to decode {query['code']}_{query['from']}_{query['to']}.txt")
 
-def parse_update(date_gen):
-    query["from"] = query["to"]
-    query["to"] = next(date_gen).strftime("%d.%m.%Y")
+def parse_date(start_date, final_date):
+    query["from"] = start_date
+    query["to"] = final_date
     query["df"] = query['from'].split(".")[0]
     query["mf"] = query['from'].split(".")[1]
     query["yf"] = query['from'].split(".")[2]
@@ -73,14 +77,17 @@ def parse_update(date_gen):
 def main(argv):
     dates = parse_args(argv)
     date_gen = gen.gen(dates["start"], dates["final"])
-    
-    while True:
-        try:
+    prev_date = dates["start"]
+    try:
+        while True:
+            next_date = next(date_gen).strftime("%d.%m.%Y")
+            parse_date(prev_date, next_date)
+            prev_date = next_date
+
             make_query()
-            parse_update(date_gen)
             time.sleep(5)
-        except StopIteration:
-            print("Success")
+    except StopIteration:
+        print("Success")
     
 
 if __name__ == "__main__":
