@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 import urllib.request
 import sys
 import gen
+import time
 from exchanges.codes import codes
 
 query = {
@@ -49,22 +50,15 @@ def parse_args(argv):
     query["code"] = args.code
     query['cn'] = args.code
     query["em"] = codes[args.code][1]
-    query["from"] = args.start_date
-    query["df"] = args.start_date.split(".")[0]
-    query["mf"] = args.start_date.split(".")[1]
-    query["yf"] = args.start_date.split(".")[2]
-    query["to"] = args.final_date
-    query["dt"] = args.final_date.split(".")[0]
-    query["mt"] = args.final_date.split(".")[1]
-    query["yt"] = args.final_date.split(".")[2]
+    return [args.start_date,args.final_date]
 
 def make_query():
     req = urllib.request.Request(url=f"http://export.finam.ru/POLY_170620_170623.txt?market={query['market']}&em={query['em']}&code={query['code']}&apply={query['apply']}&df={query['df']}&mf={query['mf']}&yf={query['yf']}&from={query['from']}&dt={query['dt']}&mt={query['mt']}&yt={query['yt']}&to={query['to']}&p={query['p']}&f={query['f']}&e={query['e']}&cn={query['cn']}&dtf={query['dtf']}&tmf={query['tmf']}&MSOR={query['MSOR']}&mstime={query['mstime']}&mstimever={query['mstimever']}&sep={query['sep']}&sep2={query['sep2']}&datf={query['datf']}&at={query['at']}")
     with urllib.request.urlopen(req) as read_file, open(f"{query['code']}_{query['from']}_{query['to']}.txt", mode="w", encoding="utf-8") as write_file:
         write_file.write(read_file.read().decode('utf-8'))
-def parse_update():
-    query["from"] = fy.strftime("%Y.%m.%d")
-    query["to"] = next(fy).strftime("%Y.%m.%d")
+def parse_update(fy):
+    query["from"] = query["to"]
+    query["to"] = next(fy).strftime("%d.%m.%Y")
     query["df"] = query['from'].split(".")[0]
     query["mf"] = query['from'].split(".")[1]
     query["yf"] = query['from'].split(".")[2]
@@ -72,16 +66,16 @@ def parse_update():
     query["mt"] = query['to'].split(".")[1]
     query["yt"] = query['to'].split(".")[2]
 def main(argv):
-    parse_args(argv)
+    
+    fy = gen.gen(parse_args(argv)[0],parse_args(argv)[1])
+    parse_update(fy)
     print(query)
-    fy = gen.gen(query['from'],query['to'])
-    #make_query()
-    print(fy)
-    parse_update()
-    print(fy)
-    parse_update()
-    print(fy)
-    parse_update()
+    
+    for x in range(5):
+        make_query()
+        parse_update(fy)
+        time.sleep(5)
+    
 
 if __name__ == "__main__":
     main(sys.argv[1:])
