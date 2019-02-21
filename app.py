@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 import urllib.request
 import sys
-from exchanges.ex3 import codes
+from exchanges.codes import codes
 
 query = {
     'market': "1", # Говорит о том, где вращается бумага(инструмент)
@@ -45,8 +45,9 @@ def parse_args(argv):
     parser.add_argument("start_date", help="Starting date in dd.mm.yyyy format")
     parser.add_argument("month_count", help="Determine how many month since start date should be analyzed")
     args = parser.parse_args()
-    # query["code"] = args.code
-    # query["em"] = codes[args.code]
+    query["market"] = codes[args.code][0]
+    query["code"] = args.code
+    query["em"] = codes[args.code][1]
     # query["from"] = args.start_date
     # query["df"] = args.start_date.split(".")[0]
     # query["mf"] = args.start_date.split(".")[1]
@@ -63,6 +64,7 @@ def make_query():
 
 def main(argv):
     parse_args(argv)
+    print(query)
     make_query()
 
 if __name__ == "__main__":
