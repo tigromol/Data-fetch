@@ -50,31 +50,37 @@ def parse_args(argv):
     query["code"] = args.code
     query['cn'] = args.code
     query["em"] = codes[args.code][1]
-    return [args.start_date,args.final_date]
+    return {"start": args.start_date, "final": args.final_date}
 
 def make_query():
     req = urllib.request.Request(url=f"http://export.finam.ru/POLY_170620_170623.txt?market={query['market']}&em={query['em']}&code={query['code']}&apply={query['apply']}&df={query['df']}&mf={query['mf']}&yf={query['yf']}&from={query['from']}&dt={query['dt']}&mt={query['mt']}&yt={query['yt']}&to={query['to']}&p={query['p']}&f={query['f']}&e={query['e']}&cn={query['cn']}&dtf={query['dtf']}&tmf={query['tmf']}&MSOR={query['MSOR']}&mstime={query['mstime']}&mstimever={query['mstimever']}&sep={query['sep']}&sep2={query['sep2']}&datf={query['datf']}&at={query['at']}")
     with urllib.request.urlopen(req) as read_file, open(f"{query['code']}_{query['from']}_{query['to']}.txt", mode="w", encoding="utf-8") as write_file:
-        write_file.write(read_file.read().decode('utf-8'))
-def parse_update(fy):
+        try:
+            write_file.write(read_file.read().decode('utf-8'))
+        except UnicodeDecodeError:
+            print(f"Unable to decode {query['code']}_{query['from']}_{query['to']}.txt")
+
+def parse_update(date_gen):
     query["from"] = query["to"]
-    query["to"] = next(fy).strftime("%d.%m.%Y")
+    query["to"] = next(date_gen).strftime("%d.%m.%Y")
     query["df"] = query['from'].split(".")[0]
     query["mf"] = query['from'].split(".")[1]
     query["yf"] = query['from'].split(".")[2]
     query["dt"] = query['to'].split(".")[0]
     query["mt"] = query['to'].split(".")[1]
     query["yt"] = query['to'].split(".")[2]
+
 def main(argv):
+    dates = parse_args(argv)
+    date_gen = gen.gen(dates["start"], dates["final"])
     
-    fy = gen.gen(parse_args(argv)[0],parse_args(argv)[1])
-    parse_update(fy)
-    print(query)
-    
-    for x in range(5):
-        make_query()
-        parse_update(fy)
-        time.sleep(5)
+    while True:
+        try:
+            make_query()
+            parse_update(date_gen)
+            time.sleep(5)
+        except StopIteration:
+            print("Success")
     
 
 if __name__ == "__main__":
