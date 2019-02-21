@@ -14,9 +14,6 @@ def gen(startDate, endDate, step=timedelta(days=1), inclusive=True):
     if inclusive and sdate == edate:
         yield sdate
      
-fy = gen('19.02.2019', '21.02.2019', step=timedelta(days=1), inclusive=True)
-print(next(fy))
-print(next(fy))
-print(next(fy))
+
 
 print('test')
