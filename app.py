@@ -85,7 +85,7 @@ def make_query():
     params = urllib.parse.urlencode(query, encoding="utf-8")
     url = base_url + params
     req = urllib.request.Request(url=url)
-    file_name = os.path.join(data_path, f"{query['code']}_{query['from']}_{query['to']}.txt")
+    file_name = os.path.join(data_path, f"\"{query['code']}\"_{query['from']}_{query['to']}.txt")
     with urllib.request.urlopen(req) as read_file, open(file_name, mode="w", encoding="utf-8") as write_file:
         try:
             write_file.write(read_file.read().decode('utf-8'))
