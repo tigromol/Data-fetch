@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
 from datetime import datetime
+import gc
 import re
 import os
 import urllib.request
@@ -9,6 +10,7 @@ from gen import gen_next_month
 import that
 import time
 from exchanges.codes import codes
+from pympler.tracker import SummaryTracker
 
 query = {
     'market': "1", # Говорит о том, где вращается бумага(инструмент)
@@ -56,6 +58,7 @@ def get_data(dir_path):
             print('start')
             for line in reader:
                 data.append(float(line.split(",")[-1]))
+            reader.close()
         yield [data,file_name]
 
 
@@ -113,8 +116,11 @@ def main(argv):
     #         time.sleep(10)
     # except StopIteration:
     #     print("Success")
-    
-    for data in get_data(data_path):
-        that.main(data)
+    generator = get_data(data_path)
+    while True:
+        that.main(next(generator))
+        gc.collect()
+        print('.'*50)
+
 if __name__ == "__main__":
     main(sys.argv[1:])

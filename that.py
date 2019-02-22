@@ -1,4 +1,5 @@
 import json
+import gc
 import math
 import sys
 import time
@@ -9,7 +10,8 @@ from numba import njit
 import openpyxl as opx
 from os import remove 
 import scipy.stats as ss
-
+from pympler.tracker import SummaryTracker
+tracker = SummaryTracker()
 testdata = [1,2,3,4,5]
 @njit()
 def amp(obser, x):
@@ -29,7 +31,7 @@ def expgrap(obser,amps):
             data.append(tmp1)
     print('expgrap finished')
     return data[1:]    
-@njit(nopython=True)
+@njit()
 def dispgrap(obser,amps):
     print('dispgrap started')
     data = [float(0)]
@@ -107,6 +109,10 @@ def main(args):
     plt.savefig(f'images/{args[1]}.png')
     print("--- %s seconds ---" % (time.time() - start_time))
     plt.clf()
+    plt.close()
+    print('*'*100)
+    gc.collect()
+    print('.'*50)
 if __name__ == "__main__":
     main(sys.argv[1:])
 
