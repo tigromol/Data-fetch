@@ -5,6 +5,7 @@ import gc
 import re
 import os
 import urllib.request
+import urllib.parse
 import sys
 from gen import gen_next_month
 import that
@@ -80,7 +81,10 @@ def parse_args(argv):
     return {"start": args.start_date, "final": args.final_date,}
 
 def make_query():
-    req = urllib.request.Request(url=f"http://export.finam.ru/POLY_170620_170623.txt?market={query['market']}&em={query['em']}&code={query['code']}&apply={query['apply']}&df={query['df']}&mf={query['mf']}&yf={query['yf']}&from={query['from']}&dt={query['dt']}&mt={query['mt']}&yt={query['yt']}&to={query['to']}&p={query['p']}&f={query['f']}&e={query['e']}&cn={query['cn']}&dtf={query['dtf']}&tmf={query['tmf']}&MSOR={query['MSOR']}&mstime={query['mstime']}&mstimever={query['mstimever']}&sep={query['sep']}&sep2={query['sep2']}&datf={query['datf']}&at={query['at']}")
+    base_url = "http://export.finam.ru/data.txt?"
+    params = urllib.parse.urlencode(query, encoding="utf-8")
+    url = base_url + params
+    req = urllib.request.Request(url=url)
     file_name = os.path.join(data_path, f"{query['code']}_{query['from']}_{query['to']}.txt")
     with urllib.request.urlopen(req) as read_file, open(file_name, mode="w", encoding="utf-8") as write_file:
         try:
@@ -101,24 +105,26 @@ def parse_date(start_date, final_date):
 def main(argv):
     
     
-    # dates = parse_args(argv)
-    # date_gen = gen_next_month(dates["start"], dates["final"])
-    # prev_date = dates["start"]
-    # try:
-    #     while True:
-    #         next_date = next(date_gen).strftime("%d.%m.%Y")
-    #         print(prev_date)
-    #         print(next_date)
-    #         parse_date(prev_date, next_date)
-    #         prev_date = next_date
+    dates = parse_args(argv)
+    date_gen = gen_next_month(dates["start"], dates["final"])
+    prev_date = dates["start"]
+    try:
+        while True:
+            next_date = next(date_gen).strftime("%d.%m.%Y")
+            print(prev_date)
+            print(next_date)
+            print()
+            parse_date(prev_date, next_date)
+            prev_date = next_date
 
-    #         make_query()
-    #         time.sleep(10)
-    # except StopIteration:
-    #     print("Success")
+            make_query()
+            time.sleep(1)
+    except StopIteration:
+        print("Success")
+
     generator = get_data(data_path)
-    while True:
-        that.main(next(generator))
+    for data in generator:
+        that.main(data)
         gc.collect()
         print('.'*50)
 
