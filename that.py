@@ -102,9 +102,11 @@ def main(args):
         plt.title(f'{(i+1)*10} minutes interval')
 
     print(len(args))
-    print("--- %s seconds ---" % (time.time() - start_time))
     
+    print(args[1])
     plt.savefig(f'images/{args[1]}.png')
+    print("--- %s seconds ---" % (time.time() - start_time))
+    plt.clf()
 if __name__ == "__main__":
     main(sys.argv[1:])
 

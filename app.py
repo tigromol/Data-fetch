@@ -49,6 +49,7 @@ def parse(file_path):
 def get_data(dir_path):
     for file in os.listdir(dir_path):
         data = []
+        print(dir_path)
         file_name = os.path.join(dir_path, file)
         with open(file_name, mode="r", encoding="utf-8") as reader:
             reader.readline()
@@ -97,25 +98,23 @@ def parse_date(start_date, final_date):
 def main(argv):
     
     
-    dates = parse_args(argv)
-    date_gen = gen_next_month(dates["start"], dates["final"])
-    prev_date = dates["start"]
-    try:
-        while True:
-            next_date = next(date_gen).strftime("%d.%m.%Y")
-            print(prev_date)
-            print(next_date)
-            parse_date(prev_date, next_date)
-            prev_date = next_date
+    # dates = parse_args(argv)
+    # date_gen = gen_next_month(dates["start"], dates["final"])
+    # prev_date = dates["start"]
+    # try:
+    #     while True:
+    #         next_date = next(date_gen).strftime("%d.%m.%Y")
+    #         print(prev_date)
+    #         print(next_date)
+    #         parse_date(prev_date, next_date)
+    #         prev_date = next_date
 
-            make_query()
-            time.sleep(10)
-    except StopIteration:
-        print("Success")
-    try:
-        while True:
-            that.main(next(get_data(data_path)))
-    except StopIteration:
-        print("that's all")
+    #         make_query()
+    #         time.sleep(10)
+    # except StopIteration:
+    #     print("Success")
+    
+    for data in get_data(data_path):
+        that.main(data)
 if __name__ == "__main__":
     main(sys.argv[1:])
