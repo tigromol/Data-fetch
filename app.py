@@ -55,7 +55,7 @@ def get_data(dir_path):
             print('start')
             for line in reader:
                 data.append(float(line.split(",")[-1]))
-        yield data
+        yield [data,file_name]
 
 
 
@@ -88,30 +88,34 @@ def parse_date(start_date, final_date):
     query["from"] = start_date
     query["to"] = final_date
     query["df"] = query['from'].split(".")[0]
-    query["mf"] = query['from'].split(".")[1]
+    query["mf"] = str(int(query['from'].split(".")[1])-1)
     query["yf"] = query['from'].split(".")[2]
     query["dt"] = query['to'].split(".")[0]
-    query["mt"] = query['to'].split(".")[1]
+    query["mt"] = str(int(query['to'].split(".")[1])-1)
     query["yt"] = query['to'].split(".")[2]
 
 def main(argv):
     
     
-    # dates = parse_args(argv)
-    # date_gen = gen_next_month(dates["start"], dates["final"])
-    # prev_date = dates["start"]
-    # try:
-    #     while True:
-    #         next_date = next(date_gen).strftime("%d.%m.%Y")
-    #         print(prev_date)
-    #         print(next_date)
-    #         parse_date(prev_date, next_date)
-    #         prev_date = next_date
+    dates = parse_args(argv)
+    date_gen = gen_next_month(dates["start"], dates["final"])
+    prev_date = dates["start"]
+    try:
+        while True:
+            next_date = next(date_gen).strftime("%d.%m.%Y")
+            print(prev_date)
+            print(next_date)
+            parse_date(prev_date, next_date)
+            prev_date = next_date
 
-    #         make_query()
-    #         time.sleep(1)
-    # except StopIteration:
-    #     print("Success")
-    that.main(next(get_data(data_path)))
+            make_query()
+            time.sleep(10)
+    except StopIteration:
+        print("Success")
+    try:
+        while True:
+            that.main(next(get_data(data_path)))
+    except StopIteration:
+        print("that's all")
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -26,3 +26,10 @@ def add_month(orig_date, count):
     new_day = min(orig_date.day, last_day_of_month)
 
     return orig_date.replace(year=new_year, month=new_month, day=new_day)
+
+def gen_next_year(start_date, end_date, step=1):
+    sdate = datetime.strptime(start_date, '%d.%m.%Y')
+    edate = datetime.strptime(end_date, '%d.%m.%Y')
+    while sdate < edate:
+        sdate = sdate.year + 1
+        yield sdate
